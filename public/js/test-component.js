@@ -1,4 +1,15 @@
-AFRAME.registerComponent('constrain-look-controls', {
+
+
+
+
+
+
+
+
+
+
+
+AFRAME.registerComponent('test-constrain-look-controls', {
     init: function() {
       this.rig =document.querySelector('#rig');
     },

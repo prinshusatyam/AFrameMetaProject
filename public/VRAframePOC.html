@@ -16,19 +16,19 @@
     <!-- <script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-extras@14411ea/dist/aframe-extras.controls.min.js"></script> -->
 
     <!--Used for NavMesh -->
-    <!-- <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@fb96ab2/dist/aframe-extras.min.js"></script> -->
-    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@fb96ab2/dist/aframe-extras.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script> -->
 
     <!-- Aframe Physics System Cannon JS-->
-    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script> -->
 
 
     <!--   used to prevent players from spawning on top of each other so much  -->
     <script src="/js/spawn-in-circle.component.js"></script>
     <!--scripts-->
-    <script src="./js/rotation-constrain.js"></script>
-    <script src="./js/movement-animation.component.js"></script>
-    <!-- <script src="./js/test-component.js"></script> -->
+    <script src="/js/rotation-constrain.js"></script>
+    <script src="/js/movement-animation.component.js"></script>
+    <script src="/js/test-component.js"></script>
 
     <script>
       function onConnect() {
@@ -57,6 +57,11 @@
     <script src="https://unpkg.com/aframe-randomizer-components@^3.0.1/dist/aframe-randomizer-components.min.js"></script>
   </head>
   <body>
+    <div id="room-details">
+      <h3>Room Details:</h3>
+      <p id="player-count"></p>
+      <p id="room-name"></p>
+    </div>
     <a-scene
         networked-scene="
         room: basic-networked-room;
@@ -74,19 +79,17 @@
         <a-asset-item id="player-model-left" src="assets//WalkStrafeLeft.glb"></a-asset-item>
         <a-asset-item id="player-model-right" src="assets/WalkStrafeRight.glb"></a-asset-item>
         <a-asset-item id="player-model-backward" src="assets/WalkBackward.glb"></a-asset-item>
-        
-
     </a-assets>
       <a-assets>
         <!--Templates-->
         <template id="rig-template">
           <a-entity></a-entity>
         </template>
-
         <template id="avatar-template">
           <a-entity class="avatar" networked-audio-source="positional:false">
             <a-entity class="head" gltf-model="#player-model" scale="0.5 0.5 0.5" rotation="0 180 0" position="0 -2 -2.5" animation-mixer="clip:*" change-animation-on-keypress></a-entity>
             <a-plane
+              id="video-call-client"
               color="#FFF"
               width="4"
               height="3"
@@ -101,6 +104,13 @@
               position="0 2.5 -0.001"
               material="side: back"
               networked-video-source="streamName: screen"
+            ></a-plane>
+            <a-plane
+              color="#FFF"
+              width="2"
+              height="1"
+              position="0 2.5 -0.001"
+              material="side: back"
             ></a-plane>
           </a-entity>
         </template>
@@ -118,7 +128,7 @@
       <!--Nav Mesh-->
       <a-entity gltf-model="#my-nav-mesh" nav-mesh position="-25 -1.5 -1.5" scale="1.25 1.25 1.25" visible="false"></a-entity>
       <!--Main Code-->
-      <a-entity id="rig" movement-controls look-controls spawn-in-circle="radius:3" networked="template:#rig-template;" constrain-look-controls change-animation-on-space>
+      <a-entity id="rig" movement-controls="constrainToNavMesh: true;" look-controls spawn-in-circle="radius:3" networked="template:#rig-template;" constrain-look-controls change-animation-on-space>
         <a-entity
           camera
           position="0 2 2.5"
@@ -142,13 +152,6 @@
         <button id="screen-btn" type="button" class="button">Share screen</button>
         <button id="mic-btn" type="button" class="button">Mute Mic</button>
     </div>
-    
-
-    <script>
-      function onConnect() {
-        console.log('onConnect', new Date());
-      }
-    </script>
 
     <script>
       // Camera status
@@ -176,6 +179,17 @@
       // Called by Networked-Aframe when connected to server
       function onConnect() {
       console.log('onConnect', new Date());
+      
+      console.log("hii");
+        document.body.addEventListener('entityCreated', function (evt) {
+          console.error('entityCreated event', evt.detail.el);
+          var videocall = document.querySelectorAll('#video-call-client');
+          console.log(videocall[1].getAttribute("position"));
+          console.log(videocall);
+          console.log(videocall[1]);
+          var player1 = document.querySelectorAll('.avatar');
+          console.log(player1[0].getAttribute("id"));
+        });
 
       // Handle mic button click (Mute and Unmute)
       micBtnEle.addEventListener('click', function () {
