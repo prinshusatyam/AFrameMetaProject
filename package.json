@@ -1,0 +1,12 @@
+{
+  "name": "aframe-meta-poc",
+  "version": "1.0.0",
+  "description": "My first multi-user virtual reality",
+  "scripts": {
+    "start": "node ./server.js"
+  },
+  "author": "Satyam",
+  "dependencies": {
+    "networked-aframe": "^0.11.0"
+  }
+}

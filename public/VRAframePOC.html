@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>AFramePOC</title>
+    <meta name="description" content="VR Aframe POC" />
+
+    <script src="https://aframe.io/releases/1.4.1/aframe.min.js"></script>
+
+    <!--   NAF basic requirements   -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.5.0/socket.io.slim.js"></script>
+    <script src="/easyrtc/easyrtc.js"></script>
+    <script src="/dist/networked-aframe.js"></script>
+
+    <!--    used for flying in this demo  -->
+    <!-- <script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-extras@14411ea/dist/aframe-extras.controls.min.js"></script> -->
+
+    <!--Used for NavMesh -->
+    <!-- <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@fb96ab2/dist/aframe-extras.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script>
+
+    <!-- Aframe Physics System Cannon JS-->
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
+
+
+    <!--   used to prevent players from spawning on top of each other so much  -->
+    <script src="/js/spawn-in-circle.component.js"></script>
+    <!--scripts-->
+    <script src="./js/rotation-constrain.js"></script>
+    <script src="./js/movement-animation.component.js"></script>
+    <!-- <script src="./js/test-component.js"></script> -->
+
+    <script>
+      function onConnect() {
+        console.log('onConnect', new Date());
+      }
+      NAF.schemas.getComponentsOriginal = NAF.schemas.getComponents;
+      NAF.schemas.getComponents = (template) => {
+        if (!NAF.schemas.hasTemplate('#avatar-template')) {
+          NAF.schemas.add({
+            template: '#avatar-template',
+            components: [
+              'position',
+              'rotation',
+              {
+                selector: '.head',
+                component: 'material',
+                property: 'color'
+              }
+            ]
+          });
+        }
+        const components = NAF.schemas.getComponentsOriginal(template);
+        return components;
+      };
+    </script>
+    <script src="https://unpkg.com/aframe-randomizer-components@^3.0.1/dist/aframe-randomizer-components.min.js"></script>
+  </head>
+  <body>
+    <a-scene
+        networked-scene="
+        room: basic-networked-room;
+        debug: true;
+        adapter: easyrtc;
+        audio: true;
+        video: true;
+        "
+        physics
+    >
+    <a-assets>
+        <a-asset-item id="my-nav-mesh" src="assets/newnavmesh23.glb"></a-asset-item>
+        <a-asset-item id="player-model" src="assets/remy@idle.glb"></a-asset-item>
+        <a-asset-item id="player-model-walking" src="assets/WAlking.glb"></a-asset-ttem>
+        <a-asset-item id="player-model-left" src="assets//WalkStrafeLeft.glb"></a-asset-item>
+        <a-asset-item id="player-model-right" src="assets/WalkStrafeRight.glb"></a-asset-item>
+        <a-asset-item id="player-model-backward" src="assets/WalkBackward.glb"></a-asset-item>
+        
+
+    </a-assets>
+      <a-assets>
+        <!--Templates-->
+        <template id="rig-template">
+          <a-entity></a-entity>
+        </template>
+
+        <template id="avatar-template">
+          <a-entity class="avatar" networked-audio-source="positional:false">
+            <a-entity class="head" gltf-model="#player-model" scale="0.5 0.5 0.5" rotation="0 180 0" position="0 -2 -2.5" animation-mixer="clip:*" change-animation-on-keypress></a-entity>
+            <a-plane
+              color="#FFF"
+              width="4"
+              height="3"
+              position="0 2 0"
+              material="side: back"
+              networked-video-source
+            ></a-plane>
+            <a-plane
+              color="#FFF"
+              width="2"
+              height="1"
+              position="0 2.5 -0.001"
+              material="side: back"
+              networked-video-source="streamName: screen"
+            ></a-plane>
+          </a-entity>
+        </template>
+        <!-- /Templates -->
+      </a-assets>
+      <!--Environment-->
+      <a-plane rotation="-90 0 0" scale="25 25 25" color="#0A6522" static-body></a-plane>
+      <a-entity light="type:ambient;intensity:0.5"></a-entity>
+      <a-sky src="/assets/img/sky.jpg" rotation="0 10 0"></a-sky>
+      <a-entity gltf-model="#player-model" scale="0.5 0.5 0.5" rotation="0 180 0" position="-4 0 0" animation-mixer="clip:*"></a-entity>
+      <a-entity gltf-model="#player-model-walking" scale="0.5 0.5 0.5" rotation="0 180 0" position="0 0 0" animation-mixer="clip:*"></a-entity>
+      <a-entity gltf-model="#player-model-left" scale="0.5 0.5 0.5" rotation="0 180 0" position="4 0 0" animation-mixer="clip:*"></a-entity>
+      <a-entity gltf-model="#player-model-right" scale="0.5 0.5 0.5" rotation="0 180 0" position="8 0 0" animation-mixer="clip:*"></a-entity>
+      <a-entity gltf-model="#player-model-backward" scale="0.5 0.5 0.5" rotation="0 180 0" position="12 0 0" animation-mixer="clip:*"></a-entity>
+      <!--Nav Mesh-->
+      <a-entity gltf-model="#my-nav-mesh" nav-mesh position="-25 -1.5 -1.5" scale="1.25 1.25 1.25" visible="false"></a-entity>
+      <!--Main Code-->
+      <a-entity id="rig" movement-controls look-controls spawn-in-circle="radius:3" networked="template:#rig-template;" constrain-look-controls change-animation-on-space>
+        <a-entity
+          camera
+          position="0 2 2.5"
+          networked="template:#avatar-template;"
+          visible="true"
+        >
+        </a-entity>
+      </a-entity>
+
+
+    <!-- Lighting -->
+    <a-entity light="type:ambient;intensity:0.5"></a-entity>
+    <a-entity light="type: point; intensity: 0.75; distance: 50; decay: 2" position="-3 10 1"></a-entity>
+    </a-scene>
+
+    <div class="actions" style="position: absolute;
+        display: flex;
+        bottom: 3%;
+        left: 3%;">
+        <button id="camera-btn" type="button" class="button">Hide Camera</button>
+        <button id="screen-btn" type="button" class="button">Share screen</button>
+        <button id="mic-btn" type="button" class="button">Mute Mic</button>
+    </div>
+    
+
+    <script>
+      function onConnect() {
+        console.log('onConnect', new Date());
+      }
+    </script>
+
+    <script>
+      // Camera status
+      let cameraEnabled = true;
+      // Camera button element
+      const cameraBtnEle = document.getElementById('camera-btn');
+
+      // Screen share status
+      let screenEnabled = false;
+      // Screen share button element
+      const screenBtnEle = document.getElementById('screen-btn');
+
+      // Mic status
+      let micEnabled = true;
+      // Mic button element
+      const micBtnEle = document.getElementById('mic-btn');
+
+      const isMobile = AFRAME.utils.device.isMobile();
+
+      if (isMobile) {
+        const particles = document.getElementById('particles');
+        particles.parentNode.removeChild(particles);
+      }
+
+      // Called by Networked-Aframe when connected to server
+      function onConnect() {
+      console.log('onConnect', new Date());
+
+      // Handle mic button click (Mute and Unmute)
+      micBtnEle.addEventListener('click', function () {
+          NAF.connection.adapter.enableMicrophone(!micEnabled);
+          micEnabled = !micEnabled;
+          micBtnEle.textContent = micEnabled ? 'Mute Mic' : 'Unmute Mic';
+
+      // Handle camera button click (Off and On)
+      cameraBtnEle.addEventListener('click', function () {
+          NAF.connection.adapter.enableCamera(!cameraEnabled);
+          cameraEnabled = !cameraEnabled;
+          cameraBtnEle.textContent = cameraEnabled ? 'Hide Camera' : 'Show Camera';
+        });
+
+        // Handle screen button click (Off and On)
+        screenBtnEle.addEventListener('click', function () {
+          if (screenEnabled) {
+            NAF.connection.adapter.removeLocalMediaStream('screen');
+            screenEnabled = false;
+            screenBtnEle.textContent = 'Share screen';
+          } else {
+            navigator.mediaDevices.getDisplayMedia().then((stream) => {
+              NAF.connection.adapter.addLocalMediaStream(stream, 'screen');
+              screenEnabled = true;
+              screenBtnEle.textContent = 'Stop Screen';
+            });
+          }
+        });
+      
+      });
+      }
+    </script>
+
+  </body>
+</html>
