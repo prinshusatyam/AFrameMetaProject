@@ -93,24 +93,20 @@
               color="#FFF"
               width="4"
               height="3"
-              position="0 2 0"
+              position="0 2 -2.5"
               material="side: back"
               networked-video-source
+              visible="false"
             ></a-plane>
             <a-plane
+              id="screen-share-client"
               color="#FFF"
-              width="2"
-              height="1"
-              position="0 2.5 -0.001"
+              width="4"
+              height="3"
+              position="0 2 -2.499"
               material="side: back"
               networked-video-source="streamName: screen"
-            ></a-plane>
-            <a-plane
-              color="#FFF"
-              width="2"
-              height="1"
-              position="0 2.5 -0.001"
-              material="side: back"
+              visible="false"
             ></a-plane>
           </a-entity>
         </template>
@@ -148,9 +144,9 @@
         display: flex;
         bottom: 3%;
         left: 3%;">
-        <button id="camera-btn" type="button" class="button">Hide Camera</button>
+        <button id="camera-btn" type="button" class="button">Show Camera</button>
         <button id="screen-btn" type="button" class="button">Share screen</button>
-        <button id="mic-btn" type="button" class="button">Mute Mic</button>
+        <button id="mic-btn" type="button" class="button">Unmute Mic</button>
     </div>
 
     <script>
@@ -190,18 +186,23 @@
           var player1 = document.querySelectorAll('.avatar');
           console.log(player1[0].getAttribute("id"));
         });
-
+      //Disable Mic
+      NAF.connection.adapter.enableMicrophone(!micEnabled);
       // Handle mic button click (Mute and Unmute)
       micBtnEle.addEventListener('click', function () {
-          NAF.connection.adapter.enableMicrophone(!micEnabled);
+          NAF.connection.adapter.enableMicrophone(micEnabled);
           micEnabled = !micEnabled;
-          micBtnEle.textContent = micEnabled ? 'Mute Mic' : 'Unmute Mic';
-
+          micBtnEle.textContent = micEnabled ? 'Unmute Mic' : 'Mute Mic';
+      });
+      //Disable Camera
+      NAF.connection.adapter.enableCamera(!cameraEnabled);
       // Handle camera button click (Off and On)
       cameraBtnEle.addEventListener('click', function () {
-          NAF.connection.adapter.enableCamera(!cameraEnabled);
+          var CameraPlane = document.querySelectorAll('#video-call-client')
+          console.log(CameraPlane);
+          NAF.connection.adapter.enableCamera(cameraEnabled);
           cameraEnabled = !cameraEnabled;
-          cameraBtnEle.textContent = cameraEnabled ? 'Hide Camera' : 'Show Camera';
+          cameraBtnEle.textContent = cameraEnabled ? 'Show Camera' : 'Hide Camera';
         });
 
         // Handle screen button click (Off and On)
@@ -218,8 +219,6 @@
             });
           }
         });
-      
-      });
       }
     </script>
 
