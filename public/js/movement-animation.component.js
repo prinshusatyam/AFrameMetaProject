@@ -10,47 +10,44 @@ AFRAME.registerComponent('change-animation-on-keypress', {
         var that = this;
         this.isWalking = false;
         this.playerModelIdle = document.querySelector('.head');
-        document.body.onkeyup = function(e){
+        document.body.onkeydown = function(e){
           if(e.keyCode == that.data.moveforwardCode){
-            that.forwaedMovement();
+            this.isWalking = true;
+            that.forwardMovement();
           }
           else if(e.keyCode == that.data.moveleftCode){
+            this.isWalking = true;
             that.leftMovement();
           }
           else if(e.keyCode == that.data.movebackwardCode){
+            this.isWalking = true;
             that.backwardMovement();
           }
           else if(e.keyCode == that.data.moverightCode){
+            this.isWalking = true;
             that.rightMovement();
           }
-        } 
+        }
+        document.body.onkeyup = function(e){
+          if(e.keyCode == that.data.moveforwardCode || that.data.moveleftCode || that.data.movebackwardCode || that.data.moverightCode){
+            this.isWalking = false;
+            that.Standing();
+          }
+        }
       },
-        forwaedMovement: function () {
-            console.log("hii");
-            console.log(this.playerModelIdle)
-            console.log("Unshoot!");
-            this.playerModelIdle.setAttribute('gltf-model','assets/WAlking.glb')
-            console.log(this.playerModelIdle)
+        forwardMovement: function () {
+            this.playerModelIdle.setAttribute('gltf-model','assets/WAlking.glb');
         },
         leftMovement: function () {
-            console.log("hii");
-            console.log(this.playerModelIdle)
-            console.log("Unshoot!");
-            this.playerModelIdle.setAttribute('gltf-model','assets//WalkStrafeLeft.glb')
-            console.log(this.playerModelIdle)
+            this.playerModelIdle.setAttribute('gltf-model','assets//WalkStrafeLeft.glb');
         },
         backwardMovement: function () {
-            console.log("hii");
-            console.log(this.playerModelIdle)
-            console.log("Unshoot!");
-            this.playerModelIdle.setAttribute('gltf-model','assets/WalkBackward.glb')
-            console.log(this.playerModelIdle)
+            this.playerModelIdle.setAttribute('gltf-model','assets/WalkBackward.glb');
         },
         rightMovement: function () {
-          console.log("hii");
-          console.log(this.playerModelIdle)
-          console.log("Unshoot!");
-          this.playerModelIdle.setAttribute('gltf-model','assets/WalkStrafeRight.glb')
-          console.log(this.playerModelIdle)
+          this.playerModelIdle.setAttribute('gltf-model','assets/WalkStrafeRight.glb');
+        },
+        Standing: function () {
+          this.playerModelIdle.setAttribute('gltf-model','assets/remy@idle.glb');
         }
   });
