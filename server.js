@@ -10,8 +10,8 @@ const easyrtc = require("open-easyrtc");      // EasyRTC external module
 // and the webServer line down below.
 const https = require("https");
 const fs = require("fs");
-const privateKey = fs.readFileSync("key.pem", "utf8");
-const certificate = fs.readFileSync("cert.pem", "utf8");
+const privateKey = fs.readFileSync('server.key');
+const certificate = fs.readFileSync('server.cert');
 const credentials = { key: privateKey, cert: certificate };
 
 // Set process name
