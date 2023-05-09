@@ -57,11 +57,6 @@
     <script src="https://unpkg.com/aframe-randomizer-components@^3.0.1/dist/aframe-randomizer-components.min.js"></script>
   </head>
   <body>
-    <div id="room-details">
-      <h3>Room Details:</h3>
-      <p id="player-count"></p>
-      <p id="room-name"></p>
-    </div>
     <a-scene
         networked-scene="
         room: basic-networked-room;
@@ -75,7 +70,7 @@
     <a-assets>
         <a-asset-item id="my-nav-mesh" src="assets/newnavmesh23.glb"></a-asset-item>
         <a-asset-item id="player-model" src="assets/remy@idle.glb"></a-asset-item>
-        <a-asset-item id="player-model-walking" src="assets/WAlking.glb"></a-asset-ttem>
+        <a-asset-item id="player-model-walking" src="assets/WAlking.glb"></a-asset-item>
         <a-asset-item id="player-model-left" src="assets//WalkStrafeLeft.glb"></a-asset-item>
         <a-asset-item id="player-model-right" src="assets/WalkStrafeRight.glb"></a-asset-item>
         <a-asset-item id="player-model-backward" src="assets/WalkBackward.glb"></a-asset-item>
@@ -116,11 +111,6 @@
       <a-plane rotation="-90 0 0" scale="25 25 25" color="#0A6522" static-body></a-plane>
       <a-entity light="type:ambient;intensity:0.5"></a-entity>
       <a-sky src="/assets/img/sky.jpg" rotation="0 10 0"></a-sky>
-      <a-entity gltf-model="#player-model" scale="0.5 0.5 0.5" rotation="0 180 0" position="-4 0 0" animation-mixer="clip:*"></a-entity>
-      <a-entity gltf-model="#player-model-walking" scale="0.5 0.5 0.5" rotation="0 180 0" position="0 0 0" animation-mixer="clip:*"></a-entity>
-      <a-entity gltf-model="#player-model-left" scale="0.5 0.5 0.5" rotation="0 180 0" position="4 0 0" animation-mixer="clip:*"></a-entity>
-      <a-entity gltf-model="#player-model-right" scale="0.5 0.5 0.5" rotation="0 180 0" position="8 0 0" animation-mixer="clip:*"></a-entity>
-      <a-entity gltf-model="#player-model-backward" scale="0.5 0.5 0.5" rotation="0 180 0" position="12 0 0" animation-mixer="clip:*"></a-entity>
       <!--Nav Mesh-->
       <a-entity gltf-model="#my-nav-mesh" nav-mesh position="-25 -1.5 -1.5" scale="1.25 1.25 1.25" visible="false"></a-entity>
       <!--Main Code-->
@@ -193,7 +183,8 @@
       // Handle camera button click (Off and On)
       cameraBtnEle.addEventListener('click', function () {
           var CameraPlane = document.querySelectorAll('#video-call-client')
-          console.log(CameraPlane);
+          console.log(CameraPlane[0].getAttribute("visible",'true'));
+          console.log(CameraPlane[0]);
           NAF.connection.adapter.enableCamera(cameraEnabled);
           cameraEnabled = !cameraEnabled;
           cameraBtnEle.textContent = cameraEnabled ? 'Show Camera' : 'Hide Camera';
@@ -212,7 +203,7 @@
               screenBtnEle.textContent = 'Stop Screen';
             });
           }
-        });
+        }); 
       }
     </script>
 
