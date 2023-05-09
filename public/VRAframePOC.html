@@ -91,14 +91,13 @@
               position="0 2 -2.5"
               material="side: back"
               networked-video-source
-              visible="false"
             ></a-plane>
             <a-plane
               id="screen-share-client"
               color="#FFF"
-              width="4"
-              height="3"
-              position="0 2 -2.499"
+              width="3"
+              height="2"
+              position="0 2 -2.511"
               material="side: back"
               networked-video-source="streamName: screen"
               visible="false"
@@ -167,8 +166,6 @@
       console.log('onConnect', new Date());
         document.body.addEventListener('entityCreated', function (evt) {
           console.error('entityCreated event', evt.detail.el);
-          var videocall = document.querySelectorAll('#video-call-client');
-          var player1 = document.querySelectorAll('.avatar');
         });
       //Disable Mic
       NAF.connection.adapter.enableMicrophone(!micEnabled);
@@ -182,22 +179,21 @@
       NAF.connection.adapter.enableCamera(!cameraEnabled);
       // Handle camera button click (Off and On)
       cameraBtnEle.addEventListener('click', function () {
-          var CameraPlane = document.querySelectorAll('#video-call-client')
-          console.log(CameraPlane[0].getAttribute("visible",'true'));
-          console.log(CameraPlane[0]);
           NAF.connection.adapter.enableCamera(cameraEnabled);
           cameraEnabled = !cameraEnabled;
           cameraBtnEle.textContent = cameraEnabled ? 'Show Camera' : 'Hide Camera';
         });
-
+        var ScreenPlane = document.querySelectorAll('#screen-share-client')
         // Handle screen button click (Off and On)
         screenBtnEle.addEventListener('click', function () {
           if (screenEnabled) {
+            
             NAF.connection.adapter.removeLocalMediaStream('screen');
             screenEnabled = false;
             screenBtnEle.textContent = 'Share screen';
           } else {
             navigator.mediaDevices.getDisplayMedia().then((stream) => {
+              ScreenPlane.setAttribute('visible','true');
               NAF.connection.adapter.addLocalMediaStream(stream, 'screen');
               screenEnabled = true;
               screenBtnEle.textContent = 'Stop Screen';
