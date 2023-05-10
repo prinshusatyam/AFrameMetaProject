@@ -27,8 +27,8 @@
     <script src="/js/spawn-in-circle.component.js"></script>
     <!--scripts-->
     <script src="/js/rotation-constrain.js"></script>
-    <script src="/js/movement-animation.component.js"></script>
-    <script src="/js/test-component.js"></script>
+    <!-- <script src="/js/movement-animation.component.js"></script> -->
+    <!-- <script src="/js/test-component.js"></script> -->
 
     <script>
       function onConnect() {
@@ -74,6 +74,8 @@
         <a-asset-item id="player-model-left" src="assets//WalkStrafeLeft.glb"></a-asset-item>
         <a-asset-item id="player-model-right" src="assets/WalkStrafeRight.glb"></a-asset-item>
         <a-asset-item id="player-model-backward" src="assets/WalkBackward.glb"></a-asset-item>
+        <a-asset-item id="test-model" src="assets/TRex.glb"></a-asset-item>
+        <a-asset-item id="model-player" src="assets/Wallks_Combine.glb"></a-asset-item>
     </a-assets>
       <a-assets>
         <!--Templates-->
@@ -97,10 +99,9 @@
               color="#FFF"
               width="3"
               height="2"
-              position="0 2 -2.511"
+              position="2 -0.5 -2.5"
               material="side: back"
               networked-video-source="streamName: screen"
-              visible="false"
             ></a-plane>
           </a-entity>
         </template>
@@ -110,6 +111,7 @@
       <a-plane rotation="-90 0 0" scale="25 25 25" color="#0A6522" static-body></a-plane>
       <a-entity light="type:ambient;intensity:0.5"></a-entity>
       <a-sky src="/assets/img/sky.jpg" rotation="0 10 0"></a-sky>
+      <a-entity gltf-model="#model-player" scale="0.5 0.5 0.5" animation-mixer="clip:*"></a-entity>
       <!--Nav Mesh-->
       <a-entity gltf-model="#my-nav-mesh" nav-mesh position="-25 -1.5 -1.5" scale="1.25 1.25 1.25" visible="false"></a-entity>
       <!--Main Code-->
@@ -164,9 +166,6 @@
       // Called by Networked-Aframe when connected to server
       function onConnect() {
       console.log('onConnect', new Date());
-        document.body.addEventListener('entityCreated', function (evt) {
-          console.error('entityCreated event', evt.detail.el);
-        });
       //Disable Mic
       NAF.connection.adapter.enableMicrophone(!micEnabled);
       // Handle mic button click (Mute and Unmute)
@@ -183,17 +182,14 @@
           cameraEnabled = !cameraEnabled;
           cameraBtnEle.textContent = cameraEnabled ? 'Show Camera' : 'Hide Camera';
         });
-        var ScreenPlane = document.querySelectorAll('#screen-share-client')
         // Handle screen button click (Off and On)
         screenBtnEle.addEventListener('click', function () {
           if (screenEnabled) {
-            
             NAF.connection.adapter.removeLocalMediaStream('screen');
             screenEnabled = false;
             screenBtnEle.textContent = 'Share screen';
           } else {
             navigator.mediaDevices.getDisplayMedia().then((stream) => {
-              ScreenPlane.setAttribute('visible','true');
               NAF.connection.adapter.addLocalMediaStream(stream, 'screen');
               screenEnabled = true;
               screenBtnEle.textContent = 'Stop Screen';
@@ -202,6 +198,5 @@
         }); 
       }
     </script>
-
   </body>
 </html>

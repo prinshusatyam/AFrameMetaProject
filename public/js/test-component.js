@@ -1,23 +1,38 @@
 
+const animationNames = {
+  forward: 'Walking',
+  backward: 'WalkingBack',
+  left: 'WalkStrafeLeft',
+  right: 'walk_StrafeRight',
+};
 
+updateAnimationMixer = () => {
 
+  const data = {}
+  data.clip = 'none'
+  Object.entries(animationNames).forEach((name) => {
 
-
-
-
-
-
-
-
-AFRAME.registerComponent('test-constrain-look-controls', {
-    init: function() {
-      this.rig =document.querySelector('#rig');
-    },
-    tick: function(){
-        var xRot = this.rig.getAttribute("rotation").x;
-        
-        if(xRot!=0){
-            this.rig.setAttribute("rotation",{x:0, y:this.rig.getAttribute("rotation").y, z:this.rig.getAttribute("rotation").z});
-        }
+    const el = document.getElementById(name[0])
+    
+    if (el.checked) {
+      data.clip = name[1]
     }
-  });
+  })
+
+  
+
+  const target = document.getElementById('trex1')
+  target.setAttribute('animation-mixer', data)
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  const inputs = document.querySelectorAll('input, select')
+
+  inputs.forEach((input) => {
+    input.addEventListener('change', updateAnimationMixer)
+    input.addEventListener('click', updateAnimationMixer)
+  })
+
+  updateAnimationMixer()
+})
