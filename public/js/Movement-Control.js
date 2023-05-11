@@ -1,10 +1,10 @@
 const animationNames = {
-  forward: 'Walking',
-  backward: 'WalkingBack',
-  left: 'WalkStrafeLeft',
-  right: 'walk_StrafeRight',
+  forward: 'Ramy_Walking',
+  backward: 'Ramy_WalkingBack',
+  left: 'Ramy_WalkStrafeLeft',
+  right: 'Ramy_WalkStrafeRight',
+  idle: 'Ramy_Idle'
 };
-
 const pressedKeys = {
   w: false,
   a: false,
@@ -13,7 +13,7 @@ const pressedKeys = {
 };
 
 updateAnimationMixer = () => {
-  const data = { clip: 'Armature|TRex_Idle' };
+  const data = { clip: 'Ramy_Idle' };
 
   if (pressedKeys.w) {
     data.clip = animationNames.forward;
@@ -26,6 +26,7 @@ updateAnimationMixer = () => {
   }
 
   const target = document.getElementById('player-networked');
+  console.log(target);
   target.setAttribute('animation-mixer',{clip: data.clip});
 };
 
