@@ -27,7 +27,6 @@
     <script src="/js/spawn-in-circle.component.js"></script>
     <!--scripts-->
     <script src="/js/rotation-constrain.js"></script>
-    <!-- <script src="/js/movement-animation.component.js"></script> -->
     <script src="/js/test-component.js"></script>
 
     <script>
@@ -70,10 +69,6 @@
     <a-assets>
         <a-asset-item id="my-nav-mesh" src="assets/newnavmesh23.glb"></a-asset-item>
         <a-asset-item id="player-model" src="assets/remy@idle.glb"></a-asset-item>
-        <a-asset-item id="player-model-walking" src="assets/WAlking.glb"></a-asset-item>
-        <a-asset-item id="player-model-left" src="assets//WalkStrafeLeft.glb"></a-asset-item>
-        <a-asset-item id="player-model-right" src="assets/WalkStrafeRight.glb"></a-asset-item>
-        <a-asset-item id="player-model-backward" src="assets/WalkBackward.glb"></a-asset-item>
         <a-asset-item id="test-model" src="assets/TRex.glb"></a-asset-item>
         <a-asset-item id="model-player" src="assets/Wallks_Combine.glb"></a-asset-item>
     </a-assets>
@@ -84,7 +79,7 @@
         </template>
         <template id="avatar-template">
           <a-entity class="avatar" networked-audio-source="positional:false">
-            <a-entity id="player-networked" class="head" gltf-model="#model-player" scale="0.5 0.5 0.5" rotation="0 180 0" position="0 -2 -2.5" animation-mixer="clip: Armature|TRex_Idle" change-animation-on-keypress></a-entity>
+            <a-entity id="player-networked" class="head" gltf-model="#model-player" scale="0.5 0.5 0.5" rotation="0 180 0" position="0 -2 -2.5" animation-mixer="clip: Idle"></a-entity>
             <a-plane
               id="video-call-client"
               color="#FFF"
@@ -123,13 +118,11 @@
         >
         </a-entity>
       </a-entity>
-
-
     <!-- Lighting -->
     <a-entity light="type:ambient;intensity:0.5"></a-entity>
     <a-entity light="type: point; intensity: 0.75; distance: 50; decay: 2" position="-3 10 1"></a-entity>
     </a-scene>
-
+    <!--Buttons-->
     <div class="actions" style="position: absolute;
         display: flex;
         bottom: 3%;
