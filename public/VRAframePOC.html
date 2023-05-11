@@ -84,7 +84,7 @@
         </template>
         <template id="avatar-template">
           <a-entity class="avatar" networked-audio-source="positional:false">
-            <a-entity class="head" gltf-model="#test-model" scale="0.1 0.1 0.1" rotation="0 180 0" position="0 -2 -2.5" animation-mixer="clip: Armature|TRex_Idle" change-animation-on-keypress></a-entity>
+            <a-entity id="player-networked" class="head" gltf-model="#model-player" scale="0.5 0.5 0.5" rotation="0 180 0" position="0 -2 -2.5" animation-mixer="clip: Armature|TRex_Idle" change-animation-on-keypress></a-entity>
             <a-plane
               id="video-call-client"
               color="#FFF"
@@ -111,11 +111,10 @@
       <a-plane rotation="-90 0 0" scale="25 25 25" color="#0A6522" static-body></a-plane>
       <a-entity light="type:ambient;intensity:0.5"></a-entity>
       <a-sky src="/assets/img/sky.jpg" rotation="0 10 0"></a-sky>
-      <a-entity gltf-model="#model-player" scale="0.5 0.5 0.5" animation-mixer="clip:*"></a-entity>
       <!--Nav Mesh-->
       <a-entity gltf-model="#my-nav-mesh" nav-mesh position="-25 -1.5 -1.5" scale="1.25 1.25 1.25" visible="false"></a-entity>
       <!--Main Code-->
-      <a-entity id="rig" movement-controls="constrainToNavMesh: true;" look-controls spawn-in-circle="radius:3" networked="template:#rig-template;" constrain-look-controls change-animation-on-space>
+      <a-entity id="rig" movement-controls="constrainToNavMesh: true;" look-controls spawn-in-circle="radius:3" networked="template:#rig-template;" constrain-look-controls>
         <a-entity
           camera
           position="0 2 2.5"

@@ -1,5 +1,5 @@
 const animationNames = {
-  forward: 'Armature|TRex_Walk',
+  forward: 'Walking',
   backward: 'WalkingBack',
   left: 'WalkStrafeLeft',
   right: 'walk_StrafeRight',
@@ -25,9 +25,8 @@ updateAnimationMixer = () => {
     data.clip = animationNames.right;
   }
 
-  const target = document.getElementById('model-player');
-  target.setAttribute('animation-mixer', 'clip', data.clip+"*");
-
+  const target = document.getElementById('player-networked');
+  target.setAttribute('animation-mixer',{clip: data.clip});
 };
 
 document.addEventListener('DOMContentLoaded', () => {
