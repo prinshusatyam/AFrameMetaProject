@@ -28,7 +28,7 @@
     <!--scripts-->
     <script src="/js/rotation-constrain.js"></script>
     <!-- <script src="/js/movement-animation.component.js"></script> -->
-    <!-- <script src="/js/test-component.js"></script> -->
+    <script src="/js/test-component.js"></script>
 
     <script>
       function onConnect() {
@@ -84,7 +84,7 @@
         </template>
         <template id="avatar-template">
           <a-entity class="avatar" networked-audio-source="positional:false">
-            <a-entity class="head" gltf-model="#player-model" scale="0.5 0.5 0.5" rotation="0 180 0" position="0 -2 -2.5" animation-mixer="clip:*" change-animation-on-keypress></a-entity>
+            <a-entity class="head" gltf-model="#test-model" scale="0.1 0.1 0.1" rotation="0 180 0" position="0 -2 -2.5" animation-mixer="clip: Armature|TRex_Idle" change-animation-on-keypress></a-entity>
             <a-plane
               id="video-call-client"
               color="#FFF"

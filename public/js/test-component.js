@@ -1,38 +1,49 @@
-
 const animationNames = {
-  forward: 'Walking',
+  forward: 'Armature|TRex_Walk',
   backward: 'WalkingBack',
   left: 'WalkStrafeLeft',
   right: 'walk_StrafeRight',
 };
 
+const pressedKeys = {
+  w: false,
+  a: false,
+  s: false,
+  d: false,
+};
+
 updateAnimationMixer = () => {
+  const data = { clip: 'Armature|TRex_Idle' };
 
-  const data = {}
-  data.clip = 'none'
-  Object.entries(animationNames).forEach((name) => {
+  if (pressedKeys.w) {
+    data.clip = animationNames.forward;
+  } else if (pressedKeys.s) {
+    data.clip = animationNames.backward;
+  } else if (pressedKeys.a) {
+    data.clip = animationNames.left;
+  } else if (pressedKeys.d) {
+    data.clip = animationNames.right;
+  }
 
-    const el = document.getElementById(name[0])
-    
-    if (el.checked) {
-      data.clip = name[1]
-    }
-  })
+  const target = document.getElementById('model-player');
+  target.setAttribute('animation-mixer', 'clip', data.clip+"*");
 
-  
-
-  const target = document.getElementById('trex1')
-  target.setAttribute('animation-mixer', data)
-}
+};
 
 document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('keydown', (event) => {
+    const key = event.key.toLowerCase();
+    if (key in pressedKeys) {
+      pressedKeys[key] = true;
+      updateAnimationMixer();
+    }
+  });
 
-  const inputs = document.querySelectorAll('input, select')
-
-  inputs.forEach((input) => {
-    input.addEventListener('change', updateAnimationMixer)
-    input.addEventListener('click', updateAnimationMixer)
-  })
-
-  updateAnimationMixer()
-})
+  document.addEventListener('keyup', (event) => {
+    const key = event.key.toLowerCase();
+    if (key in pressedKeys) {
+      pressedKeys[key] = false;
+      updateAnimationMixer();
+    }
+  });
+});
