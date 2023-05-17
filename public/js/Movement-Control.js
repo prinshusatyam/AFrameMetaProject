@@ -27,6 +27,7 @@ updateAnimationMixer = () => {
 
   const target = document.getElementById('player-networked');
   target.setAttribute('animation-mixer',{clip: data.clip});
+  console.log(data.clip);  
 };
 
 document.addEventListener('DOMContentLoaded', () => {

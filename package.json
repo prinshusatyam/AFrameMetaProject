@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "My first multi-user virtual reality",
   "scripts": {
-    "start": "node ./server.js"
+    "start": "node ./server.js",
+    "start-socketio": "node ./server/socketio-server.js"
   },
   "author": "Satyam",
   "dependencies": {

@@ -24,16 +24,16 @@
     </style>
     <script src="https://aframe.io/releases/1.4.1/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@fb96ab2/dist/aframe-extras.min.js"></script>
-    <script src="/js/AvatarLoader.js"></script>
+    <!-- <script src="/js/AvatarLoader.js"></script> -->
   </head>
   <body>
     <h1>Modify Your Avatar</h1>
     <a-scene>
       <a-asset>
-        <a-asset-item id="player-model" src="assets/remy@idle.glb"></a-asset-item>
+        <a-asset-item id="Remy-model" src="assets/remy@idle.glb"></a-asset-item>
         <a-asset-item id="test-model" src="assets/TRex.glb"></a-asset-item>
       </a-asset>
-      <a-entity id="avatar-canvas" gltf-model="#player-model" scale="0.5 0.5 0.5" animation-mixer="clip: *"></a-entity>
+      <a-entity id="avatar-canvas" gltf-model="#Remy-model" scale="0.5 0.5 0.5" animation-mixer="clip: *"></a-entity>
       <a-entity position="0 1.2 2" camera="" look-controls="magicWindowTrackingEnabled: false; touchEnabled: false; mouseEnabled: false" rotation="" data-aframe-inspector-original-camera="">
       </a-entity>
     </a-scene>
@@ -44,5 +44,5 @@
     left: 3%;"
     onclick="window.location.href='UserInformation.html'">Done</button>
   </body>
-  <script src="/js/AvatarLoader.js"></script>
+  
 </html>

@@ -29,7 +29,12 @@
     <script src="/js/rotation-constrain.js"></script>
     <script src="/js/Movement-Control.js"></script>
     <script src="/js/Animation-Netorked.js"></script>
-
+    <script>
+      // Hypnos-phi/aframe-extras@37fd255 is https://github.com/n5ro/aframe-extras/pull/373
+      // Also waiting https://github.com/n5ro/aframe-extras/pull/377 to be merged
+      // Redefine the alias for now:
+      THREE.Math = THREE.MathUtils;
+    </script>
     <script>
       function onConnect() {
         console.log('onConnect', new Date());
@@ -46,7 +51,8 @@
                 selector: '.head',
                 component: 'material',
                 property: 'color'
-              }
+              },
+              'player-info'
             ]
           });
         }
@@ -57,6 +63,12 @@
     <script src="https://unpkg.com/aframe-randomizer-components@^3.0.1/dist/aframe-randomizer-components.min.js"></script>
   </head>
   <body>
+
+    <input
+      id="username-overlay"
+      style="z-index: 100; bottom: 24px; left: 48px; position: fixed"
+      oninput="document.getElementById('local-avatar').setAttribute('player-info', 'name', this.value)"
+    />
     <a-scene
         networked-scene="
         room: basic-networked-room;
@@ -64,6 +76,7 @@
         adapter: easyrtc;
         audio: true;
         video: true;
+        server: 13.234.226.131:8080
         "
         physics
     >
@@ -71,7 +84,7 @@
         <a-asset-item id="my-nav-mesh" src="assets/newnavmesh23.glb"></a-asset-item>
         <a-asset-item id="player-model" src="assets/remy@idle.glb"></a-asset-item>
         <a-asset-item id="test-model" src="assets/TRex.glb"></a-asset-item>
-        <a-asset-item id="model-player" src="assets/Wallks_Combine2.glb"></a-asset-item>
+        <a-asset-item id="model-player" src="assets/Wallks_Combine2_v02.glb"></a-asset-item>
     </a-assets>
       <a-assets>
         <!--Templates-->
@@ -99,6 +112,14 @@
               material="side: back"
               networked-video-source="streamName: screen"
             ></a-plane>
+            <a-text
+              class="nametag"
+              value="?"
+              rotation="0 180 0"
+              position=".25 -.35 0"
+              side="double"
+              scale=".5 .5 .5"
+            ></a-text>
           </a-entity>
         </template>
         <!-- /Templates -->
