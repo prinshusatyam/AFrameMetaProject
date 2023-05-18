@@ -5,7 +5,7 @@ const nextAvatarButton = document.getElementById('next-avatar-button');
 
 let currentModel = DisplayplayerModel;
 nextAvatarButton.addEventListener('click', () => {
-    console.log(currentModel);
+    console.log("hii");
     currentModel.setAttribute('gltf-model','assets/TRex.glb');
     currentModel.setAttribute('scale', {x:0.1, y:0.1, z:0.1});
 });

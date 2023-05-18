@@ -51,8 +51,15 @@
                 selector: '.head',
                 component: 'material',
                 property: 'color'
-              },
-              'player-info'
+              }
+            ]
+          });
+        }
+        if (!NAF.schemas.hasTemplate('#model-template')) {
+          NAF.schemas.add({
+            template: '#model-template',
+            components: [
+              'animation-mixer'
             ]
           });
         }
@@ -63,12 +70,6 @@
     <script src="https://unpkg.com/aframe-randomizer-components@^3.0.1/dist/aframe-randomizer-components.min.js"></script>
   </head>
   <body>
-
-    <input
-      id="username-overlay"
-      style="z-index: 100; bottom: 24px; left: 48px; position: fixed"
-      oninput="document.getElementById('local-avatar').setAttribute('player-info', 'name', this.value)"
-    />
     <a-scene
         networked-scene="
         room: basic-networked-room;
@@ -76,7 +77,6 @@
         adapter: easyrtc;
         audio: true;
         video: true;
-        server: 13.234.226.131:8080
         "
         physics
     >
@@ -88,12 +88,14 @@
     </a-assets>
       <a-assets>
         <!--Templates-->
+        <template id="model-template">
+          <a-entity id="player-networked" class="human-avatar" gltf-model="#model-player" scale="0.5 0.5 0.5" rotation="0 180 0" position="0 -2 -2.5" animation-mixer="clip: Ramy_Idle"></a-entity>
+        </template>
         <template id="rig-template">
           <a-entity></a-entity>
         </template>
         <template id="avatar-template">
-          <a-entity class="avatar" player-info networked-audio-source="positional:false">
-            <a-entity id="player-networked" class="human-avatar" gltf-model="#model-player" scale="0.5 0.5 0.5" rotation="0 180 0" position="0 -2 -2.5" animation-mixer="clip: Ramy_Idle"></a-entity>
+          <a-entity class="avatar" networked-audio-source="positional:false">
             <a-plane
               id="video-call-client"
               color="#FFF"
@@ -112,14 +114,6 @@
               material="side: back"
               networked-video-source="streamName: screen"
             ></a-plane>
-            <a-text
-              class="nametag"
-              value="?"
-              rotation="0 180 0"
-              position=".25 -.35 0"
-              side="double"
-              scale=".5 .5 .5"
-            ></a-text>
           </a-entity>
         </template>
         <!-- /Templates -->
@@ -138,6 +132,7 @@
           networked="template:#avatar-template;"
           visible="true"
         >
+        <a-entity networked="template:#model-template"></a-entity>
         </a-entity>
       </a-entity>
     <!-- Lighting -->
