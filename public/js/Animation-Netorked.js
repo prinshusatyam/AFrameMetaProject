@@ -1,21 +1,29 @@
 AFRAME.registerComponent('player-info', {
+  // notice that color and name are both listed in the schema; NAF will only keep
+  // properties declared in the schema in sync.
+  schema: {
+    name: { type: 'string', default: 'user-' + Math.round(Math.random() * 10000) },
+  },
 
   init: function () {
-    this.avatar = document.querySelectorAll('.avatar');
-    console.log(this.avatar);
-    this.character = this.el.querySelectorAll('.human-avatar');
-    console.log(this.character);
-    this.ownedByLocalUser = this.el.id === 'player-networked';
-    this.listUsers();
-    console.log(this.avatar[1]);
+
+    this.ownedByLocalUser = this.el.id === 'player';
+    if (this.ownedByLocalUser) {
+      // populate the html overlay with the correct name on init
+      this.nametagInput = document.getElementById('username-overlay');
+      this.nametagInput.value = this.data.name;
+      
+    }
   },
-  tick: function(){
-  },
+
   // here as an example, not used in current demo. Could build a user list, expanding on this.
   listUsers: function () {
     console.log(
       'userlist',
-      [...document.querySelectorAll('[player-info]')].map((el) => el.object3D)
+      [...document.querySelectorAll('[player-info]')].map((el) => el.components['player-info'].data.name)
     );
   },
+  update: function () {
+    this.listUsers();
+  }
 });

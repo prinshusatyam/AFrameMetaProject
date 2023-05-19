@@ -51,7 +51,8 @@
                 selector: '.head',
                 component: 'material',
                 property: 'color'
-              }
+              },
+              'player-info'
             ]
           });
         }
@@ -70,6 +71,11 @@
     <script src="https://unpkg.com/aframe-randomizer-components@^3.0.1/dist/aframe-randomizer-components.min.js"></script>
   </head>
   <body>
+    <input
+      id="username-overlay"
+      style="z-index: 100; bottom: 58px; left: 38px; position: fixed"
+      oninput="document.getElementById('player').setAttribute('player-info', 'name', this.value)"
+    />
     <a-scene
         networked-scene="
         room: basic-networked-room;
@@ -95,7 +101,7 @@
           <a-entity></a-entity>
         </template>
         <template id="avatar-template">
-          <a-entity class="avatar" networked-audio-source="positional:false">
+          <a-entity class="avatar" player-info networked-audio-source="positional:false">
             <a-plane
               id="video-call-client"
               color="#FFF"
@@ -126,7 +132,7 @@
       <a-entity gltf-model="#my-nav-mesh" nav-mesh position="-25 -1.5 -1.5" scale="1.25 1.25 1.25" visible="false"></a-entity>
       <!--Main Code-->
       <a-entity id="rig" movement-controls="constrainToNavMesh: true;" look-controls spawn-in-circle="radius:3" networked="template:#rig-template;" constrain-look-controls>
-        <a-entity id="local-avatar"
+        <a-entity id="player"
           camera
           position="0 2 2.5"
           networked="template:#avatar-template;"
