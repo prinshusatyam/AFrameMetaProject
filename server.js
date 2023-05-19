@@ -36,7 +36,7 @@ if (process.env.NODE_ENV === "development") {
   );
 }
 
-// Serve the files from the examples folder
+// Serve the files from the public folder
 app.use(express.static("public"));
 
 // Start Express http server
