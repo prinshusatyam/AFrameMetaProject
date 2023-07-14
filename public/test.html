@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>AFramePOC</title>
+    <meta name="description" content="VR Aframe POC" />
+
+    <script src="https://aframe.io/releases/1.4.1/aframe.min.js"></script>
+  </head>
+  <body>
+    <a-scene>
+    <a-assets>
+        <a-asset-item id="my-nav-mesh" src="assets/newnavmesh23.glb"></a-asset-item>
+        <a-asset-item id="player-model" src="assets/remy@idle.glb"></a-asset-item>
+        <a-asset-item id="test-model" src="assets/a1420db8-9cf0-470c-9820-7b880e3509f0.glb"></a-asset-item>
+        <a-asset-item id="model-player" src="assets/Wallks_Combine2_v02.glb"></a-asset-item>
+    </a-assets>
+      <a-assets>
+        <!--Templates-->
+        <template id="model-template">
+          <a-entity id="player-networked" class="human-avatar" gltf-model="#model-player" scale="0.5 0.5 0.5" rotation="0 180 0" position="0 -2 -2.5" animation-mixer="clip: Ramy_Idle"></a-entity>
+        </template>
+        <template id="rig-template">
+          <a-entity></a-entity>
+        </template>
+        <!-- /Templates -->
+      </a-assets>
+      <!--Environment--> 
+      <!-- <a-plane rotation="-90 0 0" scale="25 25 25" material="src: assets/img/OIP.jpg; repeat: 15 15" static-body></a-plane> -->
+      <a-entity light="type:ambient;intensity:0.5"></a-entity>
+      <a-sky src="/assets/img/sky.jpg" rotation="0 10 0"></a-sky>
+      <a-entity gltf-model="#test-model" position="0 0 0" scale="1.25 1.25 1.25"></a-entity>
+      <!--Nav Mesh-->
+      <!-- <a-entity gltf-model="#my-nav-mesh" nav-mesh position="-25 -1.5 -1.5" scale="1.25 1.25 1.25" visible="false"></a-entity> -->
+      <!--Main Code-->
+      <a-entity id="rig" wasd-controls look-controls>
+        <a-entity id="player"
+          camera
+          position="0 2 2.5"
+        >
+        </a-entity>
+      </a-entity>
+    <!-- Lighting -->
+    <a-entity light="type:ambient;intensity:0.5"></a-entity>
+    <a-entity light="type: point; intensity: 0.75; distance: 50; decay: 2" position="-3 10 1"></a-entity>
+    </a-scene>
+  </body>
+</html>

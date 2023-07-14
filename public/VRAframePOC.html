@@ -89,7 +89,7 @@
     <a-assets>
         <a-asset-item id="my-nav-mesh" src="assets/newnavmesh23.glb"></a-asset-item>
         <a-asset-item id="player-model" src="assets/remy@idle.glb"></a-asset-item>
-        <a-asset-item id="test-model" src="assets/TRex.glb"></a-asset-item>
+        <a-asset-item id="test-model" src="assets/Gathering Hall (1).glb"></a-asset-item>
         <a-asset-item id="model-player" src="assets/Wallks_Combine2_v02.glb"></a-asset-item>
     </a-assets>
       <a-assets>
@@ -125,11 +125,12 @@
         <!-- /Templates -->
       </a-assets>
       <!--Environment--> 
-      <a-plane rotation="-90 0 0" scale="25 25 25" material="src: assets/img/OIP.jpg; repeat: 15 15" static-body></a-plane>
+      <!-- <a-plane rotation="-90 0 0" scale="25 25 25" material="src: assets/img/OIP.jpg; repeat: 15 15" static-body></a-plane> -->
       <a-entity light="type:ambient;intensity:0.5"></a-entity>
       <a-sky src="/assets/img/sky.jpg" rotation="0 10 0"></a-sky>
+      <a-entity gltf-model="#test-model" position="0 0 0" scale="1.25 1.25 1.25"></a-entity>
       <!--Nav Mesh-->
-      <a-entity gltf-model="#my-nav-mesh" nav-mesh position="-25 -1.5 -1.5" scale="1.25 1.25 1.25" visible="false"></a-entity>
+      <!-- <a-entity gltf-model="#my-nav-mesh" nav-mesh position="-25 -1.5 -1.5" scale="1.25 1.25 1.25" visible="false"></a-entity> -->
       <!--Main Code-->
       <a-entity id="rig" movement-controls="constrainToNavMesh: true;" look-controls spawn-in-circle="radius:3" networked="template:#rig-template;" constrain-look-controls>
         <a-entity id="player"
