@@ -1,0 +1,61 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class M4_32_60_Controller : MonoBehaviour
+{
+    public Transform M4_Player_posS32;
+    public Transform Main_M4_Player;
+    public Transform M4_Player_pos33;
+    public GameObject M4FootprintCanvas;
+    [SerializeField] AudioClip audioClip;
+    //public Button M4_button;
+
+    private void OnEnable()
+    {
+        Main_M4_Player.position = M4_Player_posS32.position;
+        Main_M4_Player.rotation = M4_Player_posS32.rotation;
+        Debug.Log("Onenable" + Main_M4_Player.position);
+
+        /*if (M4_button != null)
+        {
+            M4_button.interactable = false;
+        }*/
+
+        Invoke("PlayAudio", 0.2f);
+    }
+
+    private void PlayAudio()
+    {
+        AudioManager.instance.PlayAudio(audioClip);
+        AudioManager.instance.onAudioFinishedCallback += onAudioFinishedCallback;
+    }
+
+    void onAudioFinishedCallback()
+    {
+        M4FootprintCanvas.SetActive(true);
+    }
+
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+    public void Click_ButtonClicked()
+    {
+        M4FootprintCanvas.SetActive(false);
+        Debug.Log("befour onclick"+Main_M4_Player.position);
+        Main_M4_Player.position = new Vector3(-2.1f, Main_M4_Player.position.y, Main_M4_Player.position.z);
+        Main_M4_Player.position = Main_M4_Player.position;
+        Debug.Log("after onclick"+Main_M4_Player.position);
+
+    }
+}
