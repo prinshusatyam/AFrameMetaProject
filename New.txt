@@ -1,0 +1,497 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using System;
+using UnityEngine.SceneManagement;
+
+public class AccountPayableManager : Singleton<AccountPayableManager>
+{
+    public int testModule;
+
+
+    public Action OnModuleChange;
+    public Action<ScreenType> OnScreenChange;
+    public Action OnARDetectionOpen;
+    public Action OnModuleEnd;
+
+
+    [SerializeField]
+    private ModuleType currentModuleType;
+    public ModuleType CurrentModuleType { get { return currentModuleType; } }
+
+    [SerializeField]
+    private AppState currentState;
+    public AppState CurrentState { get { return currentState; } }
+
+    public int completedModuleIndex { get; private set; }
+
+
+    [SerializeField] private Module[] modules;
+    [SerializeField] private HeaderPanel header;
+    [SerializeField] private FooterPanel footer;
+    [SerializeField] private GameObject planeDetectionPanel;
+    [SerializeField] private GameObject modulesHubPanel;
+    [SerializeField] private Button nextButton;
+    [SerializeField] private VideoPlayerHandler videoPlayer;
+    [SerializeField] private ModulesSequence modulesSequence;
+
+    private bool isArSceneLoaded = false;
+    
+
+
+    private void Start()
+    {
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
+        //Screen.orientation = ScreenOrientation.Landscape;
+        //PlayerPrefs.DeleteAll();
+        completedModuleIndex = PlayerPrefs.GetInt(APConstants.COMPLETED_MODULES, -1);
+        //completedModuleIndex = testModule;
+        Debug.Log("completedModuleIndex === " + completedModuleIndex);
+        OpenHub();
+    }
+
+    
+
+    public void OpenModule(ModuleType moduleType)
+    {
+        header.gameObject.SetActive(true);
+        planeDetectionPanel.SetActive(false);
+        modulesHubPanel.SetActive(true);
+        var module = GetModule(moduleType);
+        if (module != null)
+        {
+            currentState = AppState.MODULES;
+            currentModuleType = moduleType;
+            header.SetHeaderText(module.headerText);
+            StartCoroutine(SplachAnim(module));
+        }
+        
+    }
+
+
+    public IEnumerator SplachAnim(Module module)
+    {
+        header.Show(false);
+        module.splachPanel.gameObject.SetActive(true);
+        float oldValue = 0, newValue = 1, duration = 3;
+        float value =0;
+        for (float t = 0f; t < 3; t += Time.deltaTime)
+        {
+            value = module.splachPanel.alpha = Mathf.Lerp(oldValue, newValue, t / duration);
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(1);
+
+        Debug.Log(module.moduleType);
+        module.StartModule();
+        OnModuleScreenOpen(module);
+        OnModuleChange?.Invoke();
+        module.CloseSplashScreen();
+    }
+
+
+    public void OpenHub() {
+        Debug.Log("Hub Open..");
+
+        if (currentState == AppState.MODULES)
+        {
+            var currentModule = GetModule(currentModuleType);
+            if (currentModule != null)
+            {
+                if (currentModule.currentModuleScreen.screen == ScreenType.Quiz)
+                {
+                    QuizManager.Instance.Close();
+                }
+            }
+        }
+        if (currentState == AppState.CYU)
+        {
+            CYUManager.Instance.CloseCYU();
+        }
+
+        currentState = AppState.HUB;
+        header.Show(true);
+        header.HideTitle(false);
+
+        header.SetHeaderText("Procurement Hub");
+        planeDetectionPanel.SetActive(true);
+        modulesHubPanel.SetActive(false);
+        footer.Show(false);
+        videoPlayer.Stop();
+        AudioManager.Instance.Stop();
+        OnARDetectionOpen?.Invoke();
+    }
+
+
+    private Module GetModule (ModuleType moduleType)
+    {
+        return Array.Find<Module>(modules, x => x.moduleType == moduleType);
+    }
+
+    private void OnModuleScreenOpen(Module module)
+    {
+        SetNextButtonUnClickable();
+
+        if (module.currentModuleScreen.screen != ScreenType.ARInterection)
+        {
+            if (isArSceneLoaded)
+            {
+                LoadArScene(false);
+            }
+            
+        }
+
+        videoPlayer.Close();
+        header.Show(module.currentModuleScreen.showHider);
+        header.HideTitle(false);
+        footer.Show(module.currentModuleScreen.showfooter);
+        planeDetectionPanel.SetActive(false);
+        header.SetHeaderText(module.headerText);
+        header.HideProgressbar(false);
+        if (module.currentModuleScreen.screen == ScreenType.Quiz)
+        {
+            header.HideProgressbar(true);
+            header.SetHeaderText("Department");
+            QuizManager.Instance.StartQuiz(module.moduleType);
+        }
+        if (module.currentModuleScreen.screen == ScreenType.CharacterAnim)
+        {
+            var audioClip = module.currentModuleScreen.clip;
+            
+            CharactorAnimationHandler.Instance.PlayAnim(module.currentModuleScreen.characterAnim);
+
+            if (module.currentModuleScreen.autoNext)
+                AudioManager.Instance.PlayAudio(audioClip,OnClickNext);
+            else
+                AudioManager.Instance.PlayAudio(audioClip);
+
+        }
+        else if (module.currentModuleScreen.screen == ScreenType.UI)
+        {
+            var audioClip = module.currentModuleScreen.clip;
+            AudioManager.Instance.PlayAudio(audioClip, SetNextButtonClickable);
+        }
+        else if (module.currentModuleScreen.screen == ScreenType.ARInterection)
+        {
+            var audioClip = module.currentModuleScreen.clip;
+            AudioManager.Instance.PlayAudio(audioClip);
+            if (module.currentModuleScreen.characterAnim != CharactorAnim.NONE)
+                CharactorAnimationHandler.Instance.PlayAnim(module.currentModuleScreen.characterAnim);
+
+            //if (!isArSceneLoaded)
+            //    LoadArScene(true);
+        }
+        else if (module.currentModuleScreen.screen == ScreenType.Video)
+        {
+            //header.gameObject.SetActive(false);
+
+            var audioClip = module.currentModuleScreen.clip;
+            if (audioClip != null)
+            {
+                Debug.Log("video screen tap on continue audio not null.. ");
+                videoPlayer.PlayVideo(module.currentModuleScreen.videoType, OnVideoCompletePlayNextAudio);
+            }
+            else
+            {
+                videoPlayer.PlayVideo(module.currentModuleScreen.videoType, SetNextButtonClickable);
+            }
+            
+            header.HideTitle(true);
+        }
+        else if (module.currentModuleScreen.screen == ScreenType.ARPlaneDetection)
+        {
+            planeDetectionPanel.SetActive(true);
+            OnARDetectionOpen?.Invoke();
+        }
+        else if (module.currentModuleScreen.screen == ScreenType.AnimVideo)
+        {
+            header.HideTitle(true);
+            var audioClip = module.currentModuleScreen.clip;
+            AudioManager.Instance.PlayAudio(audioClip, SetNextButtonClickable);
+        }
+        else if (module.currentModuleScreen.screen == ScreenType.LevelCompleteScreen)
+        {
+            var audioClip = module.currentModuleScreen.clip;
+            AudioManager.Instance.PlayAudio(audioClip, SetNextButtonClickable);
+            header.HideTitle(true);
+        }
+
+        OnScreenChange?.Invoke(module.currentModuleScreen.screen);
+    }
+
+    private void OnVideoCompletePlayNextAudio() {
+        var module = GetModule(currentModuleType);
+        var audioClip = module.currentModuleScreen.clip;
+        AudioManager.Instance.PlayAudio(audioClip, SetNextButtonClickable);
+    }
+
+
+    public void OnClickNext()
+    {
+        if (currentState == AppState.MODULES || currentState == AppState.CYU)
+        {
+            var currentModule = GetModule(currentModuleType);
+            if (currentModule == null)
+            {
+                Debug.LogError("Module not Found.. " + currentModuleType);
+                return;
+            }
+
+            currentModule.NextScreen();
+            OnModuleScreenOpen(currentModule);
+        }
+    }
+
+    public void OnHome()
+    {
+        //SceneManager.LoadScene("Account_Payable");
+        OpenHub();
+    }
+    
+    public void OnBack() {
+
+        //if (currentState != AppState.HUB)
+        //{
+
+        //    videoPlayer.Stop();
+        //    AudioManager.Instance.Stop();
+        //    CharactorAnimationHandler.Instance.Stop();
+        //    OpenHub();
+        //}
+        //else
+        //{
+        //    //SceneManager.LoadScene("Account_Payable");
+        //}
+        var currentModule = GetModule(currentModuleType);
+        if (currentModule == null)
+        {
+            Debug.LogError("Module not Found.. " + currentModuleType);
+            return;
+        }
+        if (currentModule.currentScreenIndex > 0)
+        {
+            currentModule.BackScreen();
+            OnModuleScreenOpen(currentModule);
+        }
+        else
+        {
+            OpenHub();
+        }
+
+    }
+
+
+    public void OnModuleEndCountinue() {
+
+        var module = Array.Find(modules, x => x.moduleType == currentModuleType);
+        module.Close();
+        completedModuleIndex ++;
+        PlayerPrefs.SetInt(APConstants.COMPLETED_MODULES, completedModuleIndex);
+        PlayerPrefs.Save();
+        CalculateAndUpdateProgress();
+        modulesSequence.Completed_Module_();
+        OnModuleEnd?.Invoke();
+        OpenHub();
+    }
+
+
+    public void ShowNextModule()
+    {
+        int moduletoShow = completedModuleIndex + 1;
+        //modulesSequence.ShowModule(moduletoShow);
+    }
+
+
+    public void LoadArScene(bool load) {
+
+        //AsyncOperation arSceneOperation = load ?
+            //SceneManager.LoadSceneAsync(APConstants.AP_AR_SCENE, LoadSceneMode.Additive) :
+            //SceneManager.UnloadSceneAsync(APConstants.AP_AR_SCENE);
+
+        isArSceneLoaded = load;
+    }
+
+    
+
+    public CharactorAnim GetCurrentModuleCharacterAnimScreen() {
+
+        var currentModule = GetModule(currentModuleType);
+
+        if (currentModule == null)
+        {
+            Debug.LogError("Anim not Found..");
+            return CharactorAnim.NONE;
+        }
+
+        return currentModule.currentModuleScreen.characterAnim;
+    }
+
+
+
+    public void SetNextButtonClickable()
+    {
+        nextButton.interactable = true;
+    }
+
+    public void SetNextButtonUnClickable()
+    {
+        nextButton.interactable = false;
+    }
+
+  
+
+    public void OpenCYU()
+    {
+        header.HideProgressbar(true);
+        header.HideTitle(false);
+        header.SetHeaderText("Knowledge Check");
+        int index = currentModuleType == ModuleType.Module3 ? 0 : 1;
+        CYUManager.Instance.OpenCYU(index);
+        currentState = AppState.CYU;
+    }
+
+
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            CalculateAndUpdateProgress();
+        }
+    }
+
+
+    private void CalculateAndUpdateProgress() {
+
+        //float progress = ((float)(completedModuleIndex + 1) / (float)modules.Length);
+        //Hardcode for now
+        float progress = ((float)(completedModuleIndex + 1) / 8.0f);
+        Debug.Log("progress == " + progress);
+        header.UpdateProgressbar(progress);
+    }
+
+
+
+    public void GoToCurrentModuleScreen(int screenNum) {
+
+        var currentModule = GetModule(currentModuleType);
+        if (currentModule == null)
+        {
+            Debug.LogError("Module not Found.. " + currentModuleType);
+            return;
+        }
+        currentModule.GoDirectlytoScreen(screenNum);
+        OnModuleScreenOpen(currentModule);
+    }
+
+}
+
+[System.Serializable]
+public class Module {
+
+    public ModuleType moduleType;
+    public string headerText;
+    public GameObject modulePanel;
+    public CanvasGroup splachPanel;
+    public ModuleScreen[] moduleScreens;
+    public int currentScreenIndex;
+
+
+    public void StartModule()
+    {
+        OpenScreen();
+    }
+
+    private void OpenScreen(int screenIndex = 0) {
+
+        modulePanel?.SetActive(true);
+        foreach (var item in moduleScreens)
+        {
+            if (item.uiScreen!= null)
+            {
+                item.uiScreen.SetActive(false);
+            }
+        }
+
+        Debug.Log("screenIndex == " + screenIndex);
+
+        if (moduleScreens[screenIndex].uiScreen != null)
+        {
+            moduleScreens[screenIndex].uiScreen.SetActive(true);
+        }
+    }
+
+    public void GoDirectlytoScreen(int screenNum) {
+        currentScreenIndex = screenNum;
+        OpenScreen(currentScreenIndex);
+    }
+
+    public void NextScreen() {
+        currentScreenIndex++;
+        OpenScreen(currentScreenIndex);
+    }
+
+    public void BackScreen() {
+        currentScreenIndex--;
+        OpenScreen(currentScreenIndex);
+    }
+
+    public void Close() {
+        Debug.Log("modulePanel lose .. " + modulePanel.name);
+        modulePanel.SetActive(false);
+        //foreach (var item in moduleScreens) item.uiScreen.SetActive(false);
+    }
+
+    public void CloseSplashScreen() {
+        splachPanel.gameObject.SetActive(false);
+    }
+
+    public ModuleScreen currentModuleScreen { get { return moduleScreens[currentScreenIndex]; } }
+}
+
+[System.Serializable]
+public class ModuleScreen
+{
+    public ScreenType screen;
+    public GameObject uiScreen;
+    public AudioClip clip;
+    public CharactorAnim characterAnim;
+    public bool autoNext;
+    public VideoType videoType;
+    public bool showHider;
+    public bool showfooter;
+}
+
+
+[System.Serializable]
+public enum ScreenType
+{
+    UI,
+    ARInterection,
+    CharacterAnim,
+    Video,
+    AnimVideo,
+    ModuleCompleteScreen
+}
+
+
+[System.Serializable]
+public enum ModuleType
+{
+    NONE,
+    HUB = 0,
+    Module1 = 1,
+    Module2 = 2,
+    Module3 = 3,
+    Module4 = 4
+}
+
+[System.Serializable]
+public enum AppState {
+    NONE,
+    HUB,
+    MODULES,
+    CYU,
+}
