@@ -4,10 +4,14 @@
   "description": "My first multi-user virtual reality",
   "scripts": {
     "start": "node ./server.js",
-    "start-socketio": "node ./server/socketio-server.js"
+    "start-socketio": "node ./server/socketio-server.js",
+    "dev": "nodemon index"
   },
   "author": "Satyam",
   "dependencies": {
     "networked-aframe": "^0.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
   }
 }

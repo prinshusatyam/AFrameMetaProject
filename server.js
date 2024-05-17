@@ -38,7 +38,7 @@ if (process.env.NODE_ENV === "development") {
 
 // Serve the files from the public folder
 app.use(express.static("public"));
-
+app.use('/public', express.static('public'));
 // Start Express http server
 const webServer = http.createServer(app);
 // To enable https on the node server, comment the line above and uncomment the line below
